@@ -11,6 +11,20 @@ export const uploadStoreSchema: Schema<StoreType> = {
     collectionName: {
         type: 'string',
     },
+    failedFiles: {
+        type: 'array',
+        items: {
+            type: 'object',
+            properties: {
+                filePath: {
+                    type: 'string',
+                },
+                fileUploadResult: {
+                    type: 'number',
+                },
+            },
+        },
+    },
 };
 
 export const uploadStatusStore = new Store({

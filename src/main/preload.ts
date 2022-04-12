@@ -3,8 +3,10 @@ import * as fs from 'promise-fs';
 import * as electron from 'electron';
 import {
     getElectronFile,
+    getFailedFiles,
     getPendingUploads,
     setToUploadFiles,
+    updateFailedFiles,
     updatePendingUploadsFilePaths,
 } from './utils/upload';
 
@@ -155,4 +157,6 @@ windowObject['ElectronAPIs'] = {
     getPendingUploads,
     setToUploadFiles,
     updatePendingUploadsFilePaths,
+    getFailedFiles,
+    updateFailedFiles,
 };

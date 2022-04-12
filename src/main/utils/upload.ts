@@ -87,10 +87,7 @@ export const setToUploadFiles = (
 export const getPendingUploads = async () => {
     const filePaths = uploadStatusStore.get('filePaths') as string[];
     const collectionName = uploadStatusStore.get('collectionName') as string;
-    const validFilePaths = filePaths?.filter(
-        async (filePath) =>
-            await fs.stat(filePath).then((stat) => stat.isFile())
-    );
+    const validFilePaths = await getValidFilePaths(filePaths);
     return {
         files: validFilePaths
             ? await Promise.all(validFilePaths.map(getElectronFile))
@@ -101,4 +98,44 @@ export const getPendingUploads = async () => {
 
 export const updatePendingUploadsFilePaths = (filePaths: string[]) => {
     uploadStatusStore.set('filePaths', filePaths);
+};
+
+const getValidFilePaths = async (filePaths: string[]) => {
+    return filePaths?.filter(
+        async (filePath) =>
+            await fs.stat(filePath).then((stat) => stat.isFile())
+    );
+};
+
+export const updateFailedFiles = (
+    files: {
+        filePath: string;
+        fileUploadResult: number;
+    }[]
+) => {
+    uploadStatusStore.set('failedFiles', files);
+};
+
+export const getFailedFiles = async () => {
+    let failedFiles = uploadStatusStore.get('failedFiles') as {
+        filePath: string;
+        fileUploadResult: number;
+    }[];
+    const validFilePaths = await getValidFilePaths(
+        failedFiles?.map(({ filePath }) => filePath)
+    );
+    failedFiles = failedFiles?.filter(({ filePath }) =>
+        validFilePaths?.includes(filePath)
+    );
+    return failedFiles
+        ? await Promise.all(
+              failedFiles.map(async (failedFile) => {
+                  const file = await getElectronFile(failedFile.filePath);
+                  return {
+                      file,
+                      fileUploadResult: failedFile.fileUploadResult,
+                  };
+              })
+          )
+        : [];
 };

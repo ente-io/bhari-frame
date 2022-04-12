@@ -11,4 +11,8 @@ export interface ElectronFile {
 export interface StoreType {
     filePaths: string[];
     collectionName: string;
+    failedFiles: {
+        filePath: string;
+        fileUploadResult: number;
+    }[];
 }
