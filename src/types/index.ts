@@ -20,6 +20,22 @@ export interface KeysStoreType {
     };
 }
 
+type FileMapping = {
+    path: string;
+    id: number;
+};
+
+interface Mapping {
+    rootFolderName: string;
+    uploadStrategy: number;
+    folderPath: string;
+    files: FileMapping[];
+}
+
+export interface WatchStoreType {
+    mappings: Mapping[];
+}
+
 export enum FILE_PATH_TYPE {
     FILES = 'files',
     ZIPS = 'zips',

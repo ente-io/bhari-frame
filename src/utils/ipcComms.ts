@@ -2,20 +2,24 @@ import { BrowserWindow, dialog, ipcMain, Tray, Notification } from 'electron';
 import { createWindow } from './createWindow';
 import { buildContextMenu } from './menuUtil';
 import { logErrorSentry } from './sentry';
-import { getFilesFromDir } from './upload';
+import chokidar from 'chokidar';
+import path from 'path';
+import { getFilesFromDir } from '../services/fs';
 
 export default function setupIpcComs(
     tray: Tray,
-    mainWindow: BrowserWindow
+    mainWindow: BrowserWindow,
+    watcher: chokidar.FSWatcher
 ): void {
     ipcMain.handle('select-dir', async () => {
         const result = await dialog.showOpenDialog({
             properties: ['openDirectory'],
         });
-        const dir =
+        let dir =
             result.filePaths &&
             result.filePaths.length > 0 &&
             result.filePaths[0];
+        dir = dir?.split(path.sep)?.join(path.posix.sep);
         return dir;
     });
 
@@ -30,6 +34,7 @@ export default function setupIpcComs(
         };
         new Notification(notification).show();
     });
+
     ipcMain.on('reload-window', () => {
         const secondWindow = createWindow();
         mainWindow.destroy();
@@ -62,6 +67,14 @@ export default function setupIpcComs(
         }
 
         return files;
+    });
+
+    ipcMain.handle('add-watcher', async (_, args: { dir: string }) => {
+        watcher.add(args.dir);
+    });
+
+    ipcMain.handle('remove-watcher', async (_, args: { dir: string }) => {
+        watcher.unwatch(args.dir);
     });
 
     ipcMain.handle('log-error', (_, err, msg, info?) => {

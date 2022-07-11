@@ -6,6 +6,7 @@ import setupIpcComs from './utils/ipcComms';
 import { buildContextMenu, buildMenuBar } from './utils/menuUtil';
 import initSentry from './utils/sentry';
 import { isDev } from './utils/common';
+import { initWatcher } from './services/chokidar';
 
 if (isDev) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -73,7 +74,8 @@ if (!gotTheLock) {
         tray.setToolTip('ente');
         tray.setContextMenu(buildContextMenu(mainWindow));
 
-        setupIpcComs(tray, mainWindow);
+        const watcher = initWatcher(mainWindow);
+        setupIpcComs(tray, mainWindow, watcher);
         if (!isDev) {
             AppUpdater.checkForUpdate(tray, mainWindow);
         }
