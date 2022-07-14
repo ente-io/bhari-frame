@@ -21,7 +21,14 @@
     },
     "mac": {
       "category": "public.app-category.photography",
-      "hardenedRuntime": true
+      "hardenedRuntime": true,
+      "target": {
+        "target": "default",
+        "arch": [
+          "x64",
+          "arm64"
+        ]
+      }
     },
     "afterSign": "electron-builder-notarize",
     "extraFiles": [
