@@ -5,11 +5,12 @@ import { createWindow } from './utils/createWindow';
 import setupIpcComs from './utils/ipcComms';
 import { buildContextMenu, buildMenuBar } from './utils/menuUtil';
 import initSentry from './utils/sentry';
+import electronReload from 'electron-reload';
+import { PROD_HOST_URL, RENDERER_OUTPUT_DIR } from './config';
 import { isDev } from './utils/common';
+import serveNextAt from 'next-electron-server';
 
 if (isDev) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const electronReload = require('electron-reload');
     electronReload(__dirname, {});
 }
 
@@ -35,10 +36,15 @@ export const setIsUpdateAvailable = (value: boolean): void => {
     updateIsAvailable = value;
 };
 
+serveNextAt(PROD_HOST_URL, {
+    outputDir: RENDERER_OUTPUT_DIR,
+});
+
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
     app.quit();
 } else {
+    app.commandLine.appendSwitch('enable-features', 'SharedArrayBuffer');
     app.on('second-instance', () => {
         // Someone tried to run a second instance, we should focus our window.
         if (mainWindow) {
