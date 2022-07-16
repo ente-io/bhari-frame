@@ -31,6 +31,7 @@ import {
 } from './api/export';
 import { selectRootDirectory, clearElectronStore } from './api/common';
 import { getElectronFile, doesFolderExists } from './services/fs';
+import { getTranscodedFile } from './api/ffmpeg';
 
 const windowObject: any = window;
 
@@ -66,4 +67,5 @@ windowObject['ElectronAPIs'] = {
     removeWatchMapping,
     registerWatcherFunctions,
     doesFolderExists,
+    getTranscodedFile,
 };

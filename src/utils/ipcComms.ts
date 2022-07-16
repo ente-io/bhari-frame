@@ -1,4 +1,11 @@
-import { BrowserWindow, dialog, ipcMain, Tray, Notification } from 'electron';
+import {
+    BrowserWindow,
+    dialog,
+    ipcMain,
+    Tray,
+    Notification,
+    app,
+} from 'electron';
 import { createWindow } from './createWindow';
 import { buildContextMenu } from './menuUtil';
 import { logErrorSentry } from './sentry';
@@ -79,5 +86,9 @@ export default function setupIpcComs(
 
     ipcMain.handle('log-error', (_, err, msg, info?) => {
         logErrorSentry(err, msg, info);
+    });
+
+    ipcMain.handle('get-temp-path', () => {
+        return app.getPath('temp');
     });
 }
